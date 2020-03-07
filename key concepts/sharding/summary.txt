@@ -1,0 +1,165 @@
+Don't shard
+	- Get a more expensive machine, i.e. scale vertically
+	- If your application is bound by read performance, you can add caches or database replicas
+	
+	- Vertically partition by functionality
+		- Binary blobs tend to occupy large amounts of space and are isolated within your application.
+		- Storing files in S3 can reduce storage burden
+		- Other functionalities such as full text search, tagging, and analytics are best done by separate databases
+		- Often times, only few tables occupy a majority of the disk space. Very little is gained by sharding small 
+		  tables with hundreds of rows. Focus on the large tables
+	
+	- Delay Sharding 
+		- Architecture -> using microservices as each service will own its own data
+		- Functional Partioning -> keep separate data separate
+		- Replication -> Scale reads but its asynchronous and hence client may read stale information. 
+						 Use master-slave, read traffic can be offloaded from master server
+		- Caching -> scale read, query cache, memcache/redis, http cache, this will reduce traffic to database servers
+		- Queueing -> scale writes, rabbitmq, activemq, kafka etc.
+		- Optimize -> Optimize indexes, Best hardware (Fast CPUs, Plenty of memory, Fast flash storage, Good network (keep it close))
+		  
+Reason to shard
+	- scale writes
+	- eliminate single point of failure
+	- too much data for one machine
+	
+Logical Shard
+	- collection of data sharing the same partition key
+Physical Shard	
+	- The acutal data base node. A physical shard contains multiple logical shards	
+
+Parition ways
+	- Vertical -> keeping tables in different database based on application or business logic
+	- Horizontal -> set or rows of a table are kept in different partition
+
+Key-Partioning Strategy
+	- Range - based on range of values for a column -> care must be taken as most request come for last range. 
+			  e.g - new game user will be playing many games, while older user will hardly visit the site
+			  hence, the last shard will be receiving lots of the requests, i.e. a hotspot
+	- Hash - hash of a column value % shardCount -> this will distribute the old & new user evenly
+			 Problem occurs when new shard is added and data should be re-distributed which require down-time
+			 This is solved to some extend using Consistent Hashing
+			 When we shard by hash, the auto-increment column is no longer unique as each shard will have its own auto-increment value
+			 To overcome it, keep a sequence table which give auto-incremented id, before insert we pick id from the 
+			 sequence table instead of simply incrementing. 
+	- List  - based on set of fixed values for a column, i.e. Country Column. This will again suffer for un-balanced shards
+			- list of values, does not need to be sequential as is the case in Range based Partioning
+	- Key - hash function is provided by MySQL which uses one or more column value for generating hash
+
+
+Problems of partition
+	- Aggreagate query will now be expensive, as a query has to be executed on all the partition nodes and result must be aggregated, 
+	  this increase the complexity
+		- you loose the convenience of accessing the application's data in a single location	
+		- Queries spanning multiple partitions typically have looser consistency guarantees than a single partition query	
+	
+	- SQL Joins will have to be performed across all the partitions if data of the joining table span across the partition
+		- Cross-partition queries are inefficient, and many sharding schemes attempt to minimize the number of cross-partition operations
+		- On the other hand, partitions need to be granular enough to evenly distribute the load among nodes	
+		- Skip SQL joins through de-normalization, i.e. keep user's comments on a photo at both the USER table & PHOTO table
+			- This will add new problem of maintaining consistency, i.e. each comment will now have to be added/modified at 2 places
+			  If it succeed at one place and fails at other then it will have in-consistent data
+			- Have Global Tables,which are the common lookup tables, which have relatively low activity, and these tables are 
+			  replicated to all shards to avoid cross-shard joins, e.g. If a table has country name and its country code
+			  we can replicate this table across all the shards to avoid cross shard joins. Global tables are the one
+			  which contains generally static data 
+			  
+		
+	- referential integrity -> hard to enforce data integrity constraints such as foreign keys in a sharded database
+		Most relational database management systems do not support foreign keys across databases on different database servers. 
+		This means that applications that require referential integrity often have to enforce it in application code and run regular 
+		SQL jobs to clean up dangling references once they move to using database shards
+		
+	- 3 cross-node transaction options 
+		- Don’t support cross-node transactions ->  this requires careful data distribution across all the shards, to ensure all data directly 
+													related to the sharding key shares the same server
+		- Cross-node replication to avoid cross-node transactions -> Since replication is asynchronous, the replicated data might not be consistent, 
+																	 i.e., it may be stale or wrong
+		- Support cross-node transactions -> all the JOIN functionality will have to be (re)created in the application itself
+	
+	- since data is growing, hence new node has to be added. This will require re-distributing of data. Doing this without incurring down 
+	  time is extremely difficult and not supported by any off-the-shelf today. Using a scheme like directory based partitioning does 
+	  make rebalancing a more palatable experience at the cost of increasing the complexity of the system and creating a new single 
+	  point of failure (i.e. the lookup service/database)	
+	
+	- Hotspot - if partition strategy is not correct the some partition may recieves excessive queries. Hotspots are another 
+	  common problem — having uneven distribution of data and operations. Hotspots largely counteract the benefits of sharding
+	  
+	- By not having a single RDBMS managing ACID transactional across the shards, this functionality either has 
+	  to be avoided (limiting workload and business flexibility), or has to be (re)built at the application level 
+	  (at high cost and potential data risk)
+	- Managing multiple servers adds operational challenges	
+	- Memcache is not sharded on its own. It expects client libraries to distribute data within a cluster
+
+
+Ways of sharding	
+	- Algorithimic sharding
+		- client can find the partition's database using a sharding function, i.e. f(shardingKey) -> database_partitionID
+			- a simple sharding funciton could be "hash(shardingKey) % NUM_DB"
+			- read are perfomed within a single database as long as a partition key is given otherwise it requires every database node
+		- can result in non-uniform of distribution of data if algorithim is not correctly choosen
+		- resharding the data will requires updating the sharding function & moving the data around the cluster.
+		  Doing both at the same time while maintaining consistency and availability is hard. Clever choice of sharding function
+		  can reduce the amount of transferred data (i.e. Consistent Hashing)
+		- Examples of such system include Memcached. Memcached is not sharded on its own, but expects client libraries to 
+		  distribute data within a cluster
+		
+	- Dynamic sharding using locator service
+		- an external locator service determines the location of entries. This hide the complexity from Client perspective 
+		  of finding a shard location
+		- locator service can become single point of contention as all requests for read & write goes through it
+		- locator information can not be cached internally by the application as out of date information will route request to wrong shard
+		- this information is often located in an in-memory NoSQL database, such as Redis or Memcache
+		- e.g. 
+			- HDFS uses name node to store filesystem metadata
+			- Apache HBase splits row keys into ranges. The range server is responsible for storing multiple regions
+			- In MongoDB, the ConfigServer stores the sharding information, and mongos performs the query routing
+   
+	- Entitya Groups
+		- Store related entities in the same partition, i.e. all user details & comments is present in same partition
+			- this way to list down all user comments query can be answered by single partition, i.e. no need to cross partition joins
+			- store userid[0, 100] -> in partition1, userid[101, 200] in partition2
+			- in comments table, have an additonal field (userID) along with CommentID, CommentText. Parition the comments table
+			  based on userID, i.e. [0, 100] userID's comments goes to partition1 and [101, 200] userID's comments goes to partition2.
+			  This way, to answer the query (List all comments of user=x) can goes to only one partition, i.e. if  0<=x<=100 query 
+			  goes to partition1, if 101<=x<=200 query goes to partition2. Joins between User & Comments table can happens within the
+			  same partition.
+			- Similarly all user post or blog will be kept in same partition. Blog table will have userID as a column and partition will
+			  of the Blog table will be done based on userID.
+			- Here entity is USER, and all the partitioning is being done based on USER  
+			- Some queris like Chat History will require cross-partition joins.
+				- In this case, data needs to be stored in multiple partitions to support e􀁪cient reads
+				- For example, chat messages between two users may be stored twice — partitioned by both senders and recipients. 
+				  All messages sent or received by a given user are stored in a single partition. In general, many-to-many relationships 
+				  between partitions may need to be duplicated
+			- (Google App Engine) Locking is done on entity. If a lock is taken on a child node, then entire path from that node to root is locked 
+				- Entity group is collection of entties if they are closely related and want to transact on them at the same time.
+				  So, they represent a unit of transaction. If you update an entity then entire entity group is locked
+				- Transaction gurantee is provided at entity level
+				- Each entity is read and update entirely. User entity is store along with other informations like comments, post etc.
+				  on the same shard
+				- Each entity is then distributed on different shard based on hashing on shard key, i.e. user1 can go to shard1, 
+				  user2 will go to shard2 etc. During lookup, find the shard using hashing of shard key. Once shard is known, then fetch 
+				  the relevant entity information
+			- e.g. Other than sharded RDBMS solutions, Google Megastore is an example of such a system			
+	
+	
+Genearl idea is to shard the table based on entity and provide keep replica of Global table for lookup by each shard
+This will help is avoid cross-shard joins
+Vitess -> for table user_music {user_id, music_id, etc.} -> it shard the table with hash(user_id). Thus searching for a row using user_id
+	      is straight forward as we can find the shard which contain details for the specific user_id. 
+		  To, search for a row using music_id, Vitess define a lookup table(i.e. it maintains mapping of music_id -->user_id), thus for 
+		  the given music_id it gets the corresponding user_id from the lookup table and using the user_id it find the shard which it shall 
+		  search for the desired row which shard contain information about music_id). The look up table is define if user
+		  creates secondary vIndex. This way user can search for row using both user_id, music_id efficiently
+		  
+	   -> When we send a query, vitess has pre processor which figure out to which shard it needs to send the query
+		  If the query is such that it needs to fetch the data from multiple shards 
+		  (e.g Select * from user table where user_id in (1, 6), assume user=1 is in shard1 and user=6 in shard2)
+		  then vitess will generate 2 queries, i.e Select * from user table where user_id = 1 & Select * from user table where user_id = 6
+		  and send it to both shard1 & shard2. It will accumulate the result and return it to user
+			
+Sharding Technology
+	- Jetpants
+	- Vitess
+	- Clustrix
