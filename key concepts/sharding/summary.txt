@@ -1,3 +1,21 @@
+Sharding
+	- it does not necessarily mean we need to distribute data on physical machine
+	- sharding refer to dividing the data set into logical grouping, e.g. we have 500 items
+	  we can 5 logical shard each of 100 units, i.e. Shard1 -> [1, 100], Shard2 -> [101, 200] ... Shard5 -> [401, 500]
+	- Let say capacity of each physical machine is 200 units
+		- Intitially we may have only 150 items, and each of them could belong to different logical shard.
+		- But a single machine can host all of these shards. As the load increases and each logical shard 
+		  will start growing and start reaching it maximum capacity. Hence they must be moved to physical machine
+		  e.g. out of 400 items, shard1 has covered all the items in the range 1-100, & shard2 also from 101- 200
+		  hence both shard1 & shard2 must be moved to different machine
+		- client can still do a hash(key) to get the logical shard number. It will then lookup the configuration 
+		  to see which physical machine is hosting the shard and it will then connect
+	- This is the same behavior which HBase & Dynamo DB follows
+		- HBase divide the rows into logical grouping Regions. Now any machine can host this regions known 
+		  as Region Server. Client check in META Table configuration to find oud which machine(Region Server) is hosting 
+		  this region
+		  
+		  
 Don't shard
 	- Get a more expensive machine, i.e. scale vertically
 	- If your application is bound by read performance, you can add caches or database replicas
