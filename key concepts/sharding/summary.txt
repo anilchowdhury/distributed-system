@@ -1,4 +1,4 @@
-At high level there 2 possible scenarios with sharding
+At high level there are 2 possible scenarios with sharding
 	- Shard in such a way that all related data are kept at the same machine
 		- Pros 
 			- Easy to fetch items as all the relevant data are present in same machine
