@@ -1,3 +1,24 @@
+At high level there 2 possible scenarios with sharding
+	- Shard in such a way that all related data are kept at the same machine
+		- Pros 
+			- Easy to fetch items as all the relevant data are present in same machine
+			  e.g. If we shard by UserId, then all the tweets are kept on same machine. Fetching
+			  a single user tweets will be very fast
+		- Cone
+			- Hotspot issue. If a user is posting too many tweets then the other, or it has more follower
+			  then the lots of queries will be served by single machine
+			
+	- Shard in such a way the its evenly distributed across the cluster
+		- Pros 
+			- E.g. distribute the tweets based on some Hash(userId+tweetid+timestamp)
+			  Load are equally distributed. No Hotpotting
+		- Cons
+			- Have to use scatter gather pattern, i.e. now a single query will be send to all the nodes in the 
+			  cluster. Then we have to reconcile the respones from each node. Although the queries are send to 
+			  each server in parallel, but now latency is dependent on the slower node in the cluster
+
+
+
 Sharding
 	- it does not necessarily mean we need to distribute data on physical machine
 	- sharding refer to dividing the data set into logical grouping, e.g. we have 500 items
