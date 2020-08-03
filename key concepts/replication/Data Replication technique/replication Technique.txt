@@ -1,0 +1,5 @@
+http://galeracluster.com/documentation-webpages/technicaldescription.html
+https://severalnines.com/resources/tutorials/galera-cluster-mysql-tutorial
+
+https://docs.voltdb.com/UsingVoltDB/DbRepHowToActive.php
+
