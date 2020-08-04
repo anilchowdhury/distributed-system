@@ -1,0 +1,4 @@
+https://mysqlhighavailability.com/mysql-group-replication-hello-world/
+http://mysqlhighavailability.com/distributed-recovery-behind-the-scenes/
+https://mysqlhighavailability.com/page/2/
+
