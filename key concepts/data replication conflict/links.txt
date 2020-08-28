@@ -1,0 +1,2 @@
+https://docs.oracle.com/cd/E11882_01/timesten.112/e21635/conflict.htm#TTREP636
+https://dev.mysql.com/doc/refman/5.7/en/mysql-cluster-replication-conflict-resolution.html
