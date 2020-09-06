@@ -1,0 +1,44 @@
+
+API Gateway is used for
+		- to decouple the client from services
+				
+	- Separate out cross cutting concern
+		- Authentication, Authorization, SSL termination, DDos Protection, API rate limiting (Throttling), Logging and monitoring
+		- All these functionalities will be common to all the backend microservices. Hence moving them
+		  to a single component will help each of the microservice to focus on it own individual business 
+		  function
+		
+	- Routing
+		- Based on request URL, it can direct the request to the write microservice
+		- can provide load balancing
+		
+	- Can also be used as reverse proxy
+		- Any mature project, which has opened its APIs to the outside world would avoid exposing its backend URLs for security 
+		  reasons and abstracting the complexity of backend services to client applications
+		- serving static content
+		- caching backend repsonse and serving to client from its cache		
+		
+	- Help in transmitting user request to the backend protocol 
+		e.g. if client is communicating through HTTP-2, WebSocket, but if the backend service is not 
+		ready or compatible with these protocols then API gateway will act as intermediate layer
+		and convert the client request to http request and vice-versa
+		
+	- API gateway can aggregate multiple individual requests into a single request. This pattern applies when 
+	  a single operation requires calls to multiple backend services. This helps to reduce chattiness between 
+	  the client and the backend.
+	
+	- IP Listing 
+		— Allow or Block certain IP addresses to pass through. Provides an additional layer of security to your ecosystem, 
+		  useful when you discover a malicious set of addresses trying to bring down your application by using DDoS sort 
+		  of attacks
+		
+	Drawbacks:
+		Increased complexity — The API gateway is yet another moving part that
+		must be developed, deployed and managed.	
+		
+Self managed
+	- Apache, Haproxy, Nginix
+	
+	
+Cloud Services
+	- AWS API Gateway, Azure API Gateway, Google Cloud Endpoints, Apigee
