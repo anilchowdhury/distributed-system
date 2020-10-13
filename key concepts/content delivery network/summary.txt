@@ -1,0 +1,71 @@
+CDN
+	- presence of edge servers (Point of Presence PoP servers)
+		- reduces the rount trip time by serving the content from the closest vicinty of the user
+
+	- caching servers
+		- accelarte the website load time 
+		- reduce the bandwidth consumption, as for every request no need to go to origin server
+		- store the content in RAM + SSD	
+
+	- if the user base is localized and majority of the request comes from the region where website is hosted, 
+	  then not much benefit will be achieved by using CDN
+	  
+	- modify DNS configuration
+		- root domain A record is change to point to one of the CDN's IP
+		- for each sub-domain modify its CNAME record to point to CDN-provided subdomain address
+		- in both the cases, DNS will route all the requests to CDN servers
+
+	- static contents
+		- template images, logo
+		- videos
+		- music
+		- css
+		- javascript	
+		
+CDN types
+	- Push CDN
+		- Origin server has the responsibiltiy to push the changes to the CDN 
+		- Sites with minimal amounts of traffic will fare better with the push system 
+		- when you don't change the content very often 
+		- when you upload large size videos, it better to uploaded it to CDN beforehand		  
+		- when item in an inventory is over, so you want to psuh this information to CDN 
+		  so that it does not appear for purchase
+		
+	
+	- Pull CDN
+		- CDN servers will pull the changes to the resources from the origin server		
+		- the content is put onto the CDN once and left up, rather than re-pulled at regular intervals
+		- Sites that receive a great deal of traffic work best with pull CDNs
+		
+		
+Advantage of CDN
+	- reduce latency by bringing content closer to the user & cutting down Round trip time 
+	- reduce page load time, as static contents(javascript & css files, template images, music, videos) can be served from cache
+		- only dynamic query will be sent to the origin server(user's order details)
+	- improve user experience by reduing Time to First Byte (TTFB)
+		- reducing numer of HTTP requests, file compression, provide progressive rendering of images
+	
+	- provide website security by blocking DDoS floods attack
+	- handle TLS/SSL security on your behalf. Thus multiple RTTs required for SLL handsake will now take less time 
+      as user need to send SYN messages to CDN server which is closet to it	
+	- provide load balancing
+	- provide reliability by avoiding single point of failure
+	- provide sage guard when there is sudden increase in traffic	
+	
+	- route optimizations by using tier1 network service. CDN are connected directly to tier1 network
+	  thus reducing the hops count
+		- tier1 -> global network providers; tier2 -> broadband providers; tier3 -> university network, regional ISPs
+	- they uses fibre optics cable for mode of communications
+	
+	- provide purging capability -> i.e. origin server can force the CDN server to remove the cache copied of resource
+		- an item in the inventory is over, you don't want to show that item as available, you cannot wait for CDN cache 
+		  validity to time out before it can refresh from the origin server
+		- user has deleted its account, so you want all its post, pics etc. to be immediately removed from all the CDNs servers  	
+		
+        
+CDN Product
+-----------        
+Incapsula
+Akamai
+Amazon Cloudfront
+Azure CDN        
