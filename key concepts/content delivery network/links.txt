@@ -1,0 +1,2 @@
+https://www.incapsula.com/cdn-guide/
+http://blog.unixy.net/2010/07/how-to-build-your-own-cdn-using-bind-geoip-nginx-and-varnish/
