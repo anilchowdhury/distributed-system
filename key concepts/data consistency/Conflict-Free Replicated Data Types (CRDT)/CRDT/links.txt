@@ -1,0 +1,10 @@
+https://stackoverflow.com/questions/34192283/what-is-crdt-in-distributed-systems
+https://serverless.com/blog/crdt-explained-supercharge-serverless-at-edge/
+https://www.youtube.com/watch?v=B5NULPSiOGw
+
+
+https://docs.microsoft.com/en-us/sql/relational-databases/track-changes/about-change-data-capture-sql-server
+https://vladmihalcea.com/2017/06/28/a-beginners-guide-to-cdc-change-data-capture/
+http://www.databasejournal.com/features/mssql/getting-starting-with-change-data-capture-cdc-in-sql-server-part-1.html
+https://en.wikipedia.org/wiki/Change_data_capture
+http://debezium.io/docs/
