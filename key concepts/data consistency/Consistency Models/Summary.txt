@@ -1,0 +1,126 @@
+Linearizability
+	- Linearizability is a guarantee about single operations on single objects. It provides a real-time 
+	  (i.e., wallclock) guarantee on the behavior of a set of single operations (often reads and writes) on a 
+	  single object (e.g., distributed register or data item)
+	- It does not group operations together into transactions, so it does not prevent problems such 
+	  as write skew
+	- A linearizable schedule is one where each operation appears to happen atomically at a single point 
+	  in time. Once a write completes, all later reads (wall-clock time) should see the value of that write 
+	  or the value of a later write. 
+	- linearizability that has nothing to do with transactions but rather with a single global state 
+	  (or just single object). It is a real-time guarantee that all operations appear instantaneous: no
+      overlap, no interference. Once you write something, subsequent reads return that “something” . For example, 
+	  the hardware provides atomic compare-and-swap operation  
+	- In a distributed context, we may have multiple replicas of an object’s state, and in a linearizable 
+	  schedule it is as if they were all updated at once at a single point in time  
+	- It guarantee that once write is over the next immediate read of the item will return latest value of it,
+	  as if there is only one copy of it. Within a single system, this can be achieved through lock or Compare-and-Swap
+	  But in distributed system this is hard to implement where multiple copies of it will be existing
+
+
+Serializability
+	- is a guarantee about transactions, or groups of one or more operations over one or more objects. 
+	  It guarantees that the execution of a set of transactions (usually containing read and write operations) 
+	  over multiple items is equivalent to some serial execution (total ordering) of the transactions
+	- it guarantee that transactions behave the same as if they had executed in some serial order (each
+	  transaction running to completion before the next transaction starts). It is okay for the serial
+	  order to be different from the order in which transactions were actually run
+	- the result of executing a set of transactions is equivalent to exeucting those transactions one at
+	  a time, is some serial order
+	  
+	  
+(Atomic or Strong)Strict Serializability
+	- Any read on a data item x returns a value corresponding to the results of the most recent write on x
+	- All reads and writes appear as they were executed atomically and sequentially
+	- With Strict Consistency, all writes are instantaneously visible to all processes and absolute global 
+	  time order is maintained throughout the distributed system
+	- Combining serializability and linearizability yields strict serializability: transaction behavior is 
+	  equivalent to some serial execution, and the serial order corresponds to real time. For example, say 
+	  I begin and commit transaction T1, which writes to item x, and you later begin and commit transaction T2, 
+	  which reads from x. A database providing strict serializability for these transactions will place T1 
+	  before T2 in the serial ordering, and T2 will read T1’s write. 
+	- A database providing serializability (but not strict serializability) could order T2 before T1
+	
+	
+Sequential Consistency
+	- The result of any execution is the same as if the (read and write) operations by all processes on the data 
+	  store are executed in the same sequential order and the operations of each individual process appear in 
+	  this sequence in the order specified by its program.	
+	- All processes see all shared accesses in the same order. Accesses are not ordered in time
+	- Sequential Consistency is similar to the serialization problem in transactions. However, with much finer, 
+	  single read/write level granularity  
+
+
+Causal Consistency 
+	- Relaxation of sequential consistency
+	- Only causally related writes must be observed in the same order
+	- This allows disjoint writes to be overlapped
+	- Writes that are potentially causally related must be seen by all processes in the same order
+	- Concurrent writes (i.e. writes that are NOT causally related) may be seen in a different order by different processes  
+
+
+Consistent Prefix
+	- Consistent prefix guarantees that reads never see out of order writes. If writes were performed in the order 
+	  A, B, C, then a client sees either A; A,B; or A,B,C, but never out of order like A,C or B,A,C
+	  
+Eventual Consistency
+	- it guarantee that all the operations on a data item x will be evnetually seen by all the nodes
+	- the operations are deliver asynchronously, hence may be deliver in any order which could result in 
+	  write-conflict. This can be prevented by choosing (Write Quoroum > N / 2)
+	- the changes will converge -> i.e. will have same state since it has seen the same set of changes  
+	- if no new updates are made to a key, eventually all accesses will return the last updated value
+	- Eventual consistency is the weakest form of consistency where a client may get the values that are 
+	  older than the ones it had seen before
+	- Eventual consistency provides the weakest read consistency but offers the lowest latency for both 
+	  reads and writes
+	
+Probabilistically Bounded Staleness
+	- Models the probability that we will read a value that is no more than k versions older than the 
+	  last written version
+
+Session 
+	Monotoic Read
+		- If a process reads the value of item x, any subsequent read returns the same or a more recent value
+		- Monotonic-read consistency guarantees that if a process has seen a value of x at time t, it will 
+		  never see an older version of x at a later time
+	
+	Monotoic Write
+		- A write by a process on an item x is completed before any successive write on x by the same process
+		- A write is executed only if the result of a previous write has been propagated to all replicas
+
+	Read Your Write
+		- The effect of a write by a process on an item x will be seen by any successive read on x by the same process
+		- A write is always completed before a successive read of the same process, regardless the location
+		  
+	Write Follows read
+		- A write operation by a process on a data item x following a previous read operation on x by the same 
+		  process is guaranteed to take place on the same or a more recent value of x that was read
+	  
+	  
+	e.g. If multiple user are posting comments C1, C2, C3, C4 ... on a post, then its okay if these comments 
+    are written in out of order (then the actual real time ordering)
+	
+	But, if a User reply to a comment then the ordering must be maintained (i.e. Causality Consistency)
+	e.g.User1 posted a comment C1, User2 posted a reply C2 on C1. Then User1 posted another reply C3 on C2
+	    Then User2 posted a reply C4 on C3.
+		Another new User3 posted a commented C5 on original post
+		 
+		Exceptable ordering is : C5 -> {C1-> C2 -> C3 -> C4} OR {C1-> C2 -> C3 -> C4} -> C5
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+	  
+	  
