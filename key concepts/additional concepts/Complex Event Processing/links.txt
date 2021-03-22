@@ -1,0 +1,6 @@
+https://softwareengineeringdaily.com/2016/02/04/stream-processing-vs-complex-event-processing/
+https://flink.apache.org/news/2016/04/06/cep-monitoring.html
+https://www.quora.com/How-is-stream-processing-and-complex-event-processing-CEP-different
+https://cloud.google.com/solutions/architecture/complex-event-processing
+https://www.ibm.com/developerworks/library/bd-streamsintro/index.html
+http://www.espertech.com/products/esper.php
