@@ -1,3 +1,8 @@
 https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing
 http://eventuate.io/whyeventsourcing.html
 https://martinfowler.com/eaaDev/EventSourcing.html
+
+https://www.youtube.com/watch?v=gMcIRlkt1R4
+https://www.youtube.com/watch?v=8JKjvY4etTY
+https://www.youtube.com/watch?v=avi-TZI9t2I
+https://www.youtube.com/watch?v=cISNDnwlSgw
