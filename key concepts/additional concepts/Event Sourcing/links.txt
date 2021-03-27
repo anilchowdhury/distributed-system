@@ -1,0 +1,3 @@
+https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing
+http://eventuate.io/whyeventsourcing.html
+https://martinfowler.com/eaaDev/EventSourcing.html
