@@ -1,1 +1,4 @@
 
+http://www.oracle.com/webfolder/technetwork/tutorials/obe/db/10g/r2/owb/owb10gr2_gs/owb/lesson3/slowlychangingdimensions.htm
+http://datawarehouse4u.info/SCD-Slowly-Changing-Dimensions.html
+https://www.1keydata.com/datawarehousing/slowly-changing-dimensions.html
