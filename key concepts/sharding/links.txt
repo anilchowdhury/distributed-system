@@ -1,0 +1,5 @@
+https://cloud.google.com/appengine/articles/sharding_counters
+https://sites.google.com/site/io/building-scalable-web-applications-with-google-app-engine
+https://dev.mysql.com/doc/refman/5.7/en/partitioning-types.html
+https://medium.com/@jeeyoungk/how-sharding-works-b4dec46b3f6
+https://docs.oracle.com/cd/B19306_01/server.102/b14231/ds_concepts.htm#i1009129
