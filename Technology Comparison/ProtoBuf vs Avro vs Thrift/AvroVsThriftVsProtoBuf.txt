@@ -1,0 +1,9 @@
+Avro vs Thrift vs Protobuf
+	- avro require schema definition in the form of JSON, which will be saved with each file. Support nested type declaration
+	  provide extra data structures Map, Array, etc.	
+	- protobuf require parser to  generate Protobuf message class. It provide efficient encoding & minimum 
+	  space. Support nested types declaration
+	- thrift provide extra data structure, List, Set etc. 
+	- Storage space is minimum for Protobuf. Avro take 2% more space than Protobuf, which become significatin
+	  especially when we save millions of ExchangeDocument.
+	  Thrift takes more space among all these
