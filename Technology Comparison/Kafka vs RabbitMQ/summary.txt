@@ -1,0 +1,39 @@
+Message ordering
+	- Kafka
+	
+Message Routing
+	- RabbitMQ
+	
+Message Timing
+	- Delayed/scheduled messages is supported by RabbitMQ
+	- Kafka does not support delay processing
+	
+Message retention	
+	- Kafka is designed to retain messages, while RabbitMQ is not, but RabbitMQ can be configured to reatin messages
+
+Fault handling
+	- RabbitMQ is a winner on points since it provides a mechanism to solve this problem out of the box
+	
+Scale
+	- While both platforms can handle massive loads, Kafka typically scales better and can achieve higher throughput 
+	  than RabbitMQ and thus wins this round
+	
+Consumer complexity
+	- RabbitMQ uses a smart-broker and dumb-consumer approach. RabbitMQ’s structure also means that a queue’s consumer 
+	  group can efficiently scale from just one consumer to multiple consumers when the load increases, without any
+	  changes to the system. RabbitMQ’s structure also means that a queue’s consumer group can efficiently scale
+	  from just one consumer to multiple consumers when the load increases, without any changes to the system
+	  
+	  Kafka, on the other hand, uses a dumb-broker and smart-consumer approach. Consumers in a consumer group need to 
+	  coordinate leases on topic partitions between them (so that only one consumer in a consumer group listens to a 
+	  specific partition). As the load increases, we can only scale the consumer group up to the point where the number 
+	  of consumers is equal to the number of partitions in the topic. Above that, we need to configure Kafka to add 
+	  additional partitions. However, as load decreases again, we cannot remove the partitions we already added, adding 
+	  more to the work consumers need to do. Albeit, as mentioned above, the SDK handles this extra work
+	  
+	  RabbitMQ, by design, is built for dumb-consumers in mind. As a result, it is the winner of this round
+	  
+	  
+Exactly once guarantee
+	- RabbitMQ does not support it
+	- Kafka does through idemptoence feature, where every message is provided an unique id
