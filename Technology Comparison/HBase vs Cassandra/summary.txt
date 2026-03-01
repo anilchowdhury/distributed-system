@@ -1,0 +1,9 @@
+
+To me, HBase’s row key is sorted. In a big data world where index is hard to build, this is huge for some use cases. The row key 
+order serves as an index to some columns, making certain data retrieval patterns efficient to execute.
+
+And HBase supports scanning a range of columns (thanks to the row key order). This makes batch (MapReduce) job efficient to execute.
+
+HBase - has global ordering based on rowkey
+Cassandra - use partition key to partition that table across multiple nodes
+			and clustering column key to define sort order within the partition
